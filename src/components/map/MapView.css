@@ -1,0 +1,115 @@
+.gs-map {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-map__container {
+  height: 100%;
+  width: 100%;
+  background: var(--gs-foam-100);
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--gs-shadow-card) !important;
+  overflow: hidden;
+  border-radius: var(--gs-radius-sm) !important;
+}
+
+.leaflet-control-zoom a {
+  color: var(--gs-abyss-900) !important;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+}
+
+.gs-map__mode-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(4px);
+  border-radius: var(--gs-radius-md);
+  padding: 8px 14px;
+  box-shadow: var(--gs-shadow-panel);
+  max-width: 260px;
+}
+
+.gs-map__mode-title {
+  font-family: var(--gs-font-display);
+  font-size: 14px;
+  color: var(--gs-abyss-900);
+}
+
+.gs-map__mode-subtitle {
+  font-size: 11px;
+  color: var(--gs-ink-400);
+  margin-top: 1px;
+}
+
+.gs-map__mode-subtitle--predict {
+  color: var(--gs-sand-500);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+
+.gs-map__pan-controls {
+  position: absolute;
+  left: 12px;
+  bottom: 48px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: var(--gs-radius-sm);
+  box-shadow: var(--gs-shadow-card);
+}
+
+.gs-map__pan-row {
+  display: flex;
+  gap: 2px;
+}
+
+.gs-map__pan-controls button {
+  width: 30px;
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gs-abyss-900);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gs-map__pan-controls button:hover {
+  background: var(--gs-foam-100);
+}
+
+.gs-map__pan-controls button:active {
+  transform: translateY(1px);
+}
+
+
+/* Keep the map itself fully interactive: drag with the mouse, wheel to zoom,
+   while the floating panels/controls remain above it. */
+.gs-map__container {
+  cursor: grab;
+}
+.gs-map__container:active {
+  cursor: grabbing;
+}
+.gs-map__container .leaflet-pane,
+.gs-map__container .leaflet-tile-pane,
+.gs-map__container .leaflet-overlay-pane,
+.gs-map__container .leaflet-marker-pane {
+  pointer-events: auto;
+}
