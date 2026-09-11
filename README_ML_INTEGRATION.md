@@ -1,56 +1,60 @@
-# GeoSea Dashboard + ML Prediction
+# GeoSea — ML Prediction Integration
 
-## Current prediction architecture
+This document describes the machine learning prediction pipeline used by the GeoSea dashboard.
 
-GeoSea uses the confirmed production **Tabular MLP** and retrieves environmental
-inputs for the clicked coordinate directly from **Bio-ORACLE v3.0 ERDDAP**.
-The browser no longer substitutes the nearest observed GeoSea record for an
-arbitrary map click.
+## Prediction Architecture
 
-Prediction flow:
+GeoSea uses a trained Tabular MLP model to estimate marine habitat suitability for a selected geographic location.
 
-1. Choose **Habitat Suitability Prediction**.
-2. Click a marine coordinate on the map.
-3. FastAPI sends the coordinate to the Bio-ORACLE ERDDAP service.
-4. Bio-ORACLE returns the same eight baseline variables used to construct the
-   training dataset:
-   - temperature
-   - salinity
-   - chlorophyll
-   - nitrate
-   - phosphate
+The prediction pipeline is:
+
+1. The user clicks a location on the map.
+2. The latitude and longitude are sent to the FastAPI backend.
+3. The backend retrieves environmental data for the location from Bio-ORACLE v3.0 through ERDDAP.
+4. Eight environmental variables are obtained:
+   - Temperature
+   - Salinity
+   - Chlorophyll
+   - Nitrate
+   - Phosphate
    - pH
    - PAR
    - kdPAR
-5. FastAPI applies the saved `StandardScaler`.
-6. FastAPI runs the saved Tabular MLP.
-7. The frontend displays the probability, suitability class, environmental
-   values, and data provenance.
+5. The saved StandardScaler is applied to the environmental values.
+6. The trained Tabular MLP generates a suitability probability.
+7. The frontend displays the probability, suitability category, and environmental information.
 
-The eight Bio-ORACLE datasets are the training-compatible baseline layers:
+The browser does not use the nearest observed GeoSea record for prediction.
 
-- `thetao_baseline_2000_2019_depthsurf` / `thetao_mean`
-- `so_baseline_2000_2019_depthsurf` / `so_mean`
-- `chl_baseline_2000_2018_depthsurf` / `chl_mean`
-- `no3_baseline_2000_2018_depthsurf` / `no3_mean`
-- `po4_baseline_2000_2018_depthsurf` / `po4_mean`
-- `ph_baseline_2000_2018_depthsurf` / `ph_mean`
-- `par_mean_baseline_2000_2020_depthsurf` / `par_mean_mean`
-- `kdpar_mean_baseline_2000_2020_depthsurf` / `kdpar_mean_mean`
+## Environmental Data
 
-The backend selects the first baseline time slice, matching the original
-GeoSea extraction script. Bio-ORACLE's grid is 0.05° (~5.5 km at the equator).
-This is **baseline environmental data, not real-time/current observations**.
+GeoSea uses training-compatible Bio-ORACLE v3.0 baseline layers:
 
-## Backend model files
+| Variable | Bio-ORACLE Dataset |
+|---|---|
+| Temperature | `thetao_baseline_2000_2019_depthsurf` |
+| Salinity | `so_baseline_2000_2019_depthsurf` |
+| Chlorophyll | `chl_baseline_2000_2018_depthsurf` |
+| Nitrate | `no3_baseline_2000_2018_depthsurf` |
+| Phosphate | `po4_baseline_2000_2018_depthsurf` |
+| pH | `ph_baseline_2000_2018_depthsurf` |
+| PAR | `par_mean_baseline_2000_2020_depthsurf` |
+| kdPAR | `kdpar_mean_baseline_2000_2020_depthsurf` |
 
-The confirmed artifacts are already included in `backend/models/`:
+The backend uses the first baseline time slice, matching the environmental extraction used during model development.
 
-    backend/models/geosea_mlp_model.pth
-    backend/models/geosea_mlp_scaler.joblib
+Bio-ORACLE provides a spatial resolution of 0.05° (approximately 5.5 km at the equator).
 
-The backend also accepts `geosea_scaler.joblib` for compatibility with older
-training runs.
+These are baseline climatological environmental conditions and should not be interpreted as real-time measurements.
+
+## Model Files
+
+The trained model and preprocessing scaler are included in:
+
+```text
+backend/models/
+├── geosea_mlp_model.pth
+└── geosea_mlp_scaler.joblib
 
 ## Run the backend
 
